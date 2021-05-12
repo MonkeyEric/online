@@ -1,12 +1,17 @@
 # coding:utf-8
-import requests
 import json
-from modules import col
+import random
+import time
 from multiprocessing import Pool
-from utils import TimestampChange
+
+import requests
+
+import time_stamp_change
+from modules import HDY_QA
 
 
-def worker(pageNo):
+def worker(page_no):
+    time.sleep(random.uniform(random.randint(1, 2), random.randint(2, 3)))
     url = 'http://irm.cninfo.com.cn/ircs/index/search'
     headers = {
         "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -21,36 +26,39 @@ def worker(pageNo):
                       "Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.51 X-Requested-With: XMLHttpRequest "
     }
     data = {
-        "pageNo": pageNo,
-        "pageSize": "10",
+        "page_no": page_no,
+        "pageSize": "100",
         "searchTypes": "11"
     }
     res = requests.post(url=url, data=data, headers=headers)
-    data = json.loads(res.content)
+    ResponseData = json.loads(res.content)
 
     # 存储数据，插入没有的数据
-
-    print 1111
-    for i in data['results']:
-        if col.count_documents({'mainContent': i['mainContent']}) == 0:
-            col.insert(
+    for i in ResponseData['results']:
+        if HDY_QA.count_documents({'question': i['mainContent'], 'company_id': i['secid']}) == 0:
+            HDY_QA.insert(
                 {
-                    'companyShortName': i['companyShortName'],
-                    'attachedContent': i['attachedContent'],
-                    'updateDate': TimestampChange.TimeChange(i['updateDate']),
-                    'pubDate': TimestampChange.TimeChange(i['pubDate']),
+                    'company': i['companyShortName'],
+                    'company_id': i['secid'],
+                    'answer': i['attachedContent'],
+                    'updateDate': time_stamp_change.time_change(int(i['updateDate'])),
+                    'pubDate': time_stamp_change.time_change(int(i['pubDate'])),
                     'trade': i['trade'],
                     'stockCode': i['stockCode'],
                     'contentType': i['contentType'],
-                    'mainContent': i['mainContent']
+                    'question': i['mainContent']
                 }
             )
+            print i['companyShortName'], 'save success'
+        else:
+            print 'the question has been saved'
 
 
 def main():
-    ps = Pool(5)
-    for i in range(1, 100):
+    ps = Pool(2)
+    for i in range(1, 2):
         ps.apply_async(worker, args=(i,))
+        time.sleep(60)
     ps.close()
     # 阻塞进程
     ps.join()
@@ -58,3 +66,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+#  隔1隔小时
