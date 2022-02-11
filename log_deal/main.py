@@ -46,7 +46,7 @@ def log_analysis(log_file, top_num=10):
 
     need_list = rst_list[-1:-top_num - 1:-1]
     # 打印出top 10访问日志
-    print need_list
+    print(need_list)
 
 
 # 函数入口

@@ -1,8 +1,7 @@
 # coding:utf-8
 import re
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+
 
 
 def checkIdcard(idcard):
@@ -59,12 +58,12 @@ def checkIdcard(idcard):
         if re.match(ereg, idcard):
             # //计算校验位
             S = (int(idcard_list[0]) + int(idcard_list[10])) * 7 + (int(idcard_list[1]) + int(idcard_list[11])) * 9 + (
-                    int(
-                        idcard_list[2]) + int(idcard_list[12])) * 10 + (
-                        int(idcard_list[3]) + int(idcard_list[13])) * 5 + (int(
-                idcard_list[4]) + int(idcard_list[14])) * 8 + (int(idcard_list[5]) + int(idcard_list[15])) * 4 + (int(
-                idcard_list[6]) + int(idcard_list[16])) * 2 + int(idcard_list[7]) * 1 + int(idcard_list[8]) * 6 + int(
-                idcard_list[9]) * 3
+                    int(idcard_list[2]) + int(idcard_list[12])) * 10 + (
+                        int(idcard_list[3]) + int(idcard_list[13])) * 5 + \
+                        (int(idcard_list[4]) + int(idcard_list[14])) * 8 +\
+                        (int(idcard_list[5]) + int(idcard_list[15])) * 4 + \
+                        (int(idcard_list[6]) + int(idcard_list[16])) * 2 + \
+                        int(idcard_list[7]) * 1 + int(idcard_list[8]) * 6 + int(idcard_list[9]) * 3
             Y = S % 11
             M = "F"
             JYM = "10X98765432"
@@ -108,9 +107,9 @@ def check_channel(data):
 
 def re_tools(data):
     # 检查字段是否为空
-    is_null = check_channel(data)
-    if is_null.get('code') != '100000':
-        return is_null
+    # is_null = check_channel(data)
+    # if is_null.get('code') != '100000':
+    #     return is_null
     # 手机号
     if data.get('phone'):
         try:
@@ -160,15 +159,15 @@ def re_tools(data):
 
 if __name__ == "__main__":
     person_name = [u'Ak张三', '张三Ak', ' ak 颤三', u'ask asd qwd qvc']
-    org_name = ['Ak张三', '张三Ak', ' ak 颤三', 'ask asd qwd qvc', '(AK中国三', ')AK权威的 qqw', '（）读取啊是第几ak as qwd', '张三AK()',
-                '张三AK（ ）']
-    # 格式支持：汉字、数字、字母、中英文横线、中英文括号
-    register_name = ['Ak张三', '张三Ak', ' ak 颤三', 'ask asd qwd qvc', '(AK中国三', ')AK权威的 qqw', '（）读取啊是第几ak as qwd', '张三AK()',
-                     '张三AK（ ）', '-asjdi-张三', '123张三12as——', '——早上撒123sa)(（）']
-    for i in register_name:
-        # print re_tools({'name': i, 'channel_type': '个人渠道'})
-        print re_tools({'registration_certificate': i, 'channel_type': '机构渠道'})
-    # print(re_tools({'id_card':'中国后i吧qowiueqon-（）1231451234dajsiq','country':'中国'}))
+    org_name = ['Ak机构', '机构Ak', ' ak 机构', 'ask asd qwd qvc', '(AK机构', ')AK权威的 qqw', '（）读机构是第几ak as qwd', '机构AK()',
+                '机构AK（ ）']
+    # # 格式支持：汉字、数字、字母、中英文横线、中英文括号
+    # register_name = ['Ak张三', '张三Ak', ' ak 颤三', 'ask asd qwd qvc', '(AK中国三', ')AK权威的 qqw', '（）读取啊是第几ak as qwd', '张三AK()',
+    #                  '张三AK（ ）', '-asjdi-张三', '123张三12as——', '——早上撒123sa)(（）']
+    for i in org_name:
+        print(re_tools({'name': i, 'channel_type': '个人渠道'}))
+        # print(re_tools({'registration_certificate': i, 'channel_type': '机构渠道'}))
+    # print(re_tools({'id_card':'150421199009111911','country':'中国'}))
     # print(re_tools({'name':'AK张三'.decode('utf8'),'channel_type':'个人渠道'}))
     # print(re_tools({'phone':'1233512a','prefix':'+86'}))
     # print(re_tools({'registration_certificate':'——北京分公司2-103242asdqwd'}))
